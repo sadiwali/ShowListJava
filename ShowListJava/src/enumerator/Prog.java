@@ -1,4 +1,5 @@
-package objects;
+package enumerator;
+
 
 public class Prog {
 

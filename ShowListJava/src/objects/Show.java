@@ -1,14 +1,17 @@
 package objects;
 
+import enumerator.ShowTypes;
+
 /**
  * This class represents a show.
  * @author Sadi Wali
  *
  */
-public class show {
+public class Show {
 	private String title = "";
 	private String comments = "";
 	private int rating = -1;
+	private ShowTypes type = ShowTypes.NOTYPE;
 	
 	/**
 	 * Construct the show with title, comments, and rating. Rating is out of 10.
@@ -16,11 +19,32 @@ public class show {
 	 * @param comments is for the comments the user has regarding the show
 	 * @param rating is the rating in set [0, 10]
 	 */
-	public show(String title, String comments, int rating) {
+	public Show(String title, String comments, int rating) {
 		this.title = title;
 		this.comments = comments;
 		this.rating = rating;
 	}
+	
+	/**
+	 * Construct the show with title, comments, rating, and a show type. Rating is out of 10.
+	 * @param title is the title of the show.
+	 * @param comments is for the comments the user has regarding the show
+	 * @param rating is the rating in set [0, 10]
+	 * @throws Exception 
+	 */
+	public Show(String title, String comments, int rating, ShowTypes type) throws Exception {
+		this.title = title;
+		this.comments = comments;
+		this.rating = rating;
+		
+		// check if given show type is valid
+		if (ShowTypes.isValidType(type)) {
+			this.type = type;
+		} else {
+			throw new Exception("Not a real type");
+		}
+	}
+	
 	/**
 	 * Get the title of the show.
 	 * @return is the title of the show.
