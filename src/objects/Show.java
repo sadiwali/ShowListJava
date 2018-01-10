@@ -1,6 +1,6 @@
 package objects;
 
-import enumerator.ShowTypes;
+import enumerator.ShowType;
 
 /**
  * This class represents a show.
@@ -11,7 +11,7 @@ public class Show {
 	private String title = "";
 	private String comments = "";
 	private int rating = -1;
-	private ShowTypes type = ShowTypes.NOTYPE;
+	private ShowType type = ShowType.NOTYPE;
 	
 	/**
 	 * Construct the show with title, comments, and rating. Rating is out of 10.
@@ -32,14 +32,14 @@ public class Show {
 	 * @param rating is the rating in set [0, 10]
 	 * @throws Exception 
 	 */
-	public Show(String title, String comments, int rating, ShowTypes type) throws Exception {
+	public Show(String title, String comments, int rating, String type) throws Exception {
 		this.title = title;
 		this.comments = comments;
 		this.rating = rating;
 		
 		// check if given show type is valid
-		if (ShowTypes.isValidType(type)) {
-			this.type = type;
+		if (ShowType.isValidType(type)) {
+			this.type = ShowType.getShowType(type);
 		} else {
 			throw new Exception("Not a real type");
 		}
@@ -98,6 +98,10 @@ public class Show {
 		} else {
 			return false;
 		}
+	}
+	
+	public String toString() {
+		return this.title + ";" + this.comments + ";" + this.rating + ";" + this.type; 
 	}
 
 
