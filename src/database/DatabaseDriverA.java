@@ -1,10 +1,7 @@
 package database;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.nio.file.Paths;
 import java.sql.Connection;
-import java.sql.DriverManager;
+
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -12,7 +9,7 @@ import java.sql.Statement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.List;
+
 
 import org.apache.commons.dbcp2.BasicDataSource;
 
@@ -34,7 +31,7 @@ public class DatabaseDriverA {
 	// credentials
 	private final String user = "sadiw";
 	private final String passw = "frgtwhy11";
-	private final String dbName = "shows";
+
 	
 	private BasicDataSource dataSource = new BasicDataSource();
 	
