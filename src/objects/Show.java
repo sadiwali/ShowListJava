@@ -1,6 +1,9 @@
 package objects;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import enumerator.ShowType;
+import main.Const;
 
 /**
  * This class represents a show.
@@ -12,6 +15,8 @@ public class Show {
 	private String comments = "";
 	private int rating = -1;
 	private ShowType type = ShowType.NOTYPE;
+	private LocalDate watchDate = LocalDate.now();
+	
 	
 	/**
 	 * Construct the show with title, comments, and rating. Rating is out of 10.
@@ -32,17 +37,13 @@ public class Show {
 	 * @param rating is the rating in set [0, 10]
 	 * @throws Exception 
 	 */
-	public Show(String title, String comments, int rating, String type) throws Exception {
+	public Show(String title, String comments, ShowType type, int rating, LocalDate watchDate) {
 		this.title = title;
 		this.comments = comments;
 		this.rating = rating;
-		
-		// check if given show type is valid
-		if (ShowType.isValidType(type)) {
-			this.type = ShowType.getShowType(type);
-		} else {
-			throw new Exception("Not a real type");
-		}
+		this.watchDate = watchDate;
+		this.type = type;
+			
 	}
 	
 	/**
@@ -58,10 +59,26 @@ public class Show {
 	public String getComments() { return this.comments; }
 	
 	/**
-	 * Get the rating given tothe show.
+	 * Get the show type of the show.
+	 * @return the show type.
+	 */
+	public ShowType getType() {
+		return this.type;
+	}
+	
+	/**
+	 * Get the rating given to the show.
 	 * @return is the rating given out of 10.
 	 */
 	public int getRating() { return this.rating; }
+	
+	/**
+	 * Get the watch date of the show.
+	 * @return the date
+	 */
+	public LocalDate getWatchDate() {
+		return this.watchDate;
+	}
 	
 	/**
 	 * Set the title of the show.
@@ -84,8 +101,15 @@ public class Show {
 	 * @param rating is the new rating for the show.
 	 */
 	public void setRating(int rating) {
+    	// ensure rating is between 0 and 10
+		if (rating < 0) {
+    		rating = 0;
+    	} else if (rating > 10) {
+    		rating = 10;
+    	}
 		this.rating = rating;
 	}
+	
 	
 	/**
 	 * Determine if show is a good show or not. A good show has to have a minimum

@@ -8,6 +8,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 
 
@@ -16,6 +19,7 @@ import org.apache.commons.dbcp2.BasicDataSource;
 
 
 import enumerator.ShowType;
+import objects.Show;
 import tools.DateTools;
 
 /**
@@ -50,9 +54,30 @@ public class DatabaseDriverA {
 		this.dataSource.setUsername(user);
 		this.dataSource.setPassword(passw);
     }
+    
+    /**
+     * Get the number of entries or shows in database.
+     * @return the number of entries in database.
+     */
+    public int getNumEntries() {
+    	int numEntries = 0;
+    	try {
+    		this.connect = this.dataSource.getConnection();
+    		this.preparedStatement = this.connect.prepareStatement("select count(*) from shows.watchedshows");
+    		this.resultSet = this.preparedStatement.executeQuery();
+    		this.resultSet.next(); // move the cursor to data
+    		numEntries = this.resultSet.getInt(1);
+    		
+    	} catch (SQLException e) {
+    		e.printStackTrace();
+    	} finally {
+    		close();
+    	}
+    	return numEntries;
+    }
 
     /**
-     * Insert a single new show as a row into the table watchedshows.
+     * Insert a single new show as a row into the table watched shows.
      * Do not use this for inserting multiple shows in a loop.
      * Insertion of multiple shows should only be used once for database initializing
      * and you should write your own function for that.
@@ -63,32 +88,17 @@ public class DatabaseDriverA {
      * @param rating is a rating given out of 10
      * @return true if successful, false otherwise.
      */
-    public boolean insertNewShow(String title, String comment, ShowType type, int rating) {
-    	    	
-		try {
-			connect = this.dataSource.getConnection();
-		} catch (SQLException e) {
-			// connection could not be made, so return false
-			e.printStackTrace();
-			return false;
-		}
-		
+    public boolean insertNewShow(Show show) {	
     	String query = "insert into shows.watchedshows (title, comment, type, rating, date) values (?, ?, ?, ?, ?)";
     	
     	// connection established, continue
     	try {
-
+    		this.connect = this.dataSource.getConnection();
 	    	this.preparedStatement = this.connect.prepareStatement(query);
-	    	this.preparedStatement.setString(1,  title);
-	    	this.preparedStatement.setString(2,  comment);
-	    	this.preparedStatement.setString(3,  type.toString().toLowerCase());
-	    	// ensure rating is between 0 and 10
-	    	if (rating < 0) {
-	    		rating = 0;
-	    	} else if (rating > 10) {
-	    		rating = 10;
-	    	}
-	    	this.preparedStatement.setString(4, Integer.toString(rating));
+	    	this.preparedStatement.setString(1,  show.getTitle());
+	    	this.preparedStatement.setString(2,  show.getComments());
+	    	this.preparedStatement.setString(3,  show.getType().toString().toLowerCase());
+	    	this.preparedStatement.setInt(4, show.getRating());
 	    	this.preparedStatement.setString(5,  DateTools.getFormattedDate());
 	    
 	    	this.preparedStatement.executeUpdate();
@@ -110,7 +120,6 @@ public class DatabaseDriverA {
      * Close the connection to the SQL database.
      */
     private void close() {
-    	
         try {
             if (resultSet != null) {
                 resultSet.close();
@@ -128,19 +137,47 @@ public class DatabaseDriverA {
     }
     
     /**
+     * Get an array list of all shows stored in database
+     * @return
+     */
+    public ArrayList<Show> getShows() {    	
+    	// connection established
+    	ArrayList<Show> showsToRet= new ArrayList<>(); // populate this with show objects
+    	String query = "select * from shows.watchedshows";
+    	try {
+    		this.connect = this.dataSource.getConnection();
+	    	this.preparedStatement = this.connect.prepareStatement(query);	
+			this.resultSet = this.preparedStatement.executeQuery(query);
+			
+			while (this.resultSet.next()) {
+				String title = this.resultSet.getString("title");
+				String comment = this.resultSet.getString("comment");
+				ShowType type = ShowType.getShowType(this.resultSet.getString("type"));
+				int rating = this.resultSet.getInt("rating");
+				LocalDate wDate = this.resultSet.getDate("date").toLocalDate();
+				
+				// create and add the show objects
+				showsToRet.add(new Show(title, comment, type, rating, wDate));
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			close();
+		}
+    	// return arraylist
+    	return showsToRet;    	
+    }
+    
+    /**
      * Given a nested ArrayList of all lines in file data, read each line and insert into table.
      * @param textDb the databaes in text representation.
      */
     public void importFileToDatabase(ArrayList<ArrayList<String>> textDb) {
-    	try {
-			this.connect = this.dataSource.getConnection();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
     	String query = "insert into shows.watchedshows (title, comment, type, rating, date) values (?, ?, ?, ?, ?)";
     	
     	try {
+    		this.connect = this.dataSource.getConnection();
     		this.preparedStatement = this.connect.prepareStatement(query);
     		
 	    	for (ArrayList<String> line : textDb) {

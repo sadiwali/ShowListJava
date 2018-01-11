@@ -1,6 +1,9 @@
 package main;
 
-import scripts.FileImporter;
+import java.io.IOException;
+
+import database.DatabaseDriverA;
+import scripts.FileTools;
 
 public class Prog {
 	
@@ -8,17 +11,31 @@ public class Prog {
 	
 	public static void main (String args[]) {
 		if (args.length == 2) {
-			System.out.println("importing...");
 			// some commands have been passed
-			if (args[0].equals("-import")) {
-				FileImporter.importFile(args[1]);
+			if (args[0].equals("-i")) {
+				out("Comments in file will not be carried over to database.");
+				// read database from a specified file
+				FileTools.importFile(args[1]);
+			} else if (args[0].equals("-e")) {
+				// write the database to a specified file
+
+				FileTools.outputFile(args[1]);
+				
 			} else {
-				System.out.println("Did not understand: " + args[0]);
+				out("Did not understand: '" + args[0] + "'. Faulty command. ");
 			}
+			
 		} else {
-		
-			out("Welcome to ShowList Java!");
-			//System.out.println(DatabaseDriverA.getInstance().insertNewShow("Soemthing", "very good show", ShowType.ANIME, 12));
+			// run program normally
+			try {
+				Menu.mainMenu();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			
+
 		}
 		
 		
@@ -26,12 +43,15 @@ public class Prog {
 	}
 	
 	
-	
-	
+	/**
+	 * Tool function for printing to console.
+	 * @param msg the string to print to console.
+	 */
 	public static void out(String msg) {
 		System.out.println(msg);
 	}
 	
-
+	
+	
 
 }
