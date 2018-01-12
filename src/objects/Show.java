@@ -2,6 +2,8 @@ package objects;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+
 import enumerator.ShowType;
 import main.Const;
 
@@ -11,12 +13,13 @@ import main.Const;
  *
  */
 public class Show {
-	private String title = "";
-	private String comments = "";
-	private int rating = -1;
-	private ShowType type = ShowType.NOTYPE;
-	private LocalDate watchDate = LocalDate.now();
-	
+	private String title = ""; // title
+	private String comments = ""; // comment
+	private ShowType type = ShowType.NOTYPE; // type
+	private int rating = -1; // rating
+	private LocalDate watchDate = LocalDate.now(); // watch date
+	// TODO get genre automatically from google search
+	private ArrayList<String> genres = new ArrayList<>(); // show genre, list of genres
 	
 	/**
 	 * Construct the show with title, comments, and rating. Rating is out of 10.
@@ -28,6 +31,8 @@ public class Show {
 		this.title = title;
 		this.comments = comments;
 		this.rating = rating;
+		// type is notype by default
+		// watchdate is today by default
 	}
 	
 	/**
@@ -62,9 +67,7 @@ public class Show {
 	 * Get the show type of the show.
 	 * @return the show type.
 	 */
-	public ShowType getType() {
-		return this.type;
-	}
+	public ShowType getType() { return this.type; }
 	
 	/**
 	 * Get the rating given to the show.
@@ -76,25 +79,24 @@ public class Show {
 	 * Get the watch date of the show.
 	 * @return the date
 	 */
-	public LocalDate getWatchDate() {
-		return this.watchDate;
-	}
+	public LocalDate getWatchDate() { return this.watchDate; }
 	
+	/**
+	 * Get the list of genres of the show.
+	 * @return the genres.
+	 */
+	public ArrayList<String> getGenres() { return this.genres; }
 	/**
 	 * Set the title of the show.
 	 * @param title is the new title of the show.
 	 */
-	public void setTitle(String title) {
-		this.title = title;
-	}
+	public void setTitle(String title) { this.title = title; }
 
 	/**
 	 * Set the comments for the show.
 	 * @param comments is the new set of comments given to the show.
 	 */
-	public void setComments(String comments) {
-		this.comments = comments;
-	}
+	public void setComments(String comments) { this.comments = comments; }
 	
 	/**
 	 * Set the rating for the show.

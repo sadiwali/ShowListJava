@@ -12,7 +12,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
-
+import java.util.Date;
 
 import org.apache.commons.dbcp2.BasicDataSource;
 
@@ -24,7 +24,7 @@ import tools.DateTools;
 
 /**
  * This class drives the base functions of using the SQL server.
- * This is a singleton.
+ * 
  * @author Sadi Wali
  *
  */
@@ -32,25 +32,27 @@ public class DatabaseDriverA {
 	
 	private static DatabaseDriverA instance = null; // the instance class
 	
-	// credentials
+	// SQL credentials
 	private final String user = "sadiw";
 	private final String passw = "frgtwhy11";
-
+	private String tablename = "watchedshows";
 	
-	private BasicDataSource dataSource = new BasicDataSource();
+	private BasicDataSource dataSource = new BasicDataSource(); // data source for managing connection
 	
-	private Connection connect= null; // the connection to use
+	// SQL usage
+	private Connection connect = null; // the connection to use
     private Statement statement = null; // the statement to send
     private PreparedStatement preparedStatement = null; // the prepared statement to send
     private ResultSet resultSet = null; // the results from server
     
     /**
-     * Constructor for DatabaseDriverA
+     * Constructor for DatabaseDriverA using the DataSource class.
      */
     public DatabaseDriverA() {
     	// set up the connection pool
 		this.dataSource.setDriverClassName("com.mysql.jdbc.Driver");
 		this.dataSource.setUrl("jdbc:mysql://localhost/shows");
+		// authenticate
 		this.dataSource.setUsername(user);
 		this.dataSource.setPassword(passw);
     }
@@ -63,16 +65,16 @@ public class DatabaseDriverA {
     	int numEntries = 0;
     	try {
     		this.connect = this.dataSource.getConnection();
-    		this.preparedStatement = this.connect.prepareStatement("select count(*) from shows.watchedshows");
+    		this.preparedStatement = this.connect.prepareStatement("select count(*) from shows." + this.tablename);
     		this.resultSet = this.preparedStatement.executeQuery();
     		this.resultSet.next(); // move the cursor to data
     		numEntries = this.resultSet.getInt(1);
-    		
     	} catch (SQLException e) {
-    		e.printStackTrace();
+    		numEntries = -1; // error value
     	} finally {
-    		close();
+    		close(); // always close the connection
     	}
+    	
     	return numEntries;
     }
 
@@ -95,12 +97,13 @@ public class DatabaseDriverA {
     	try {
     		this.connect = this.dataSource.getConnection();
 	    	this.preparedStatement = this.connect.prepareStatement(query);
+	    	
 	    	this.preparedStatement.setString(1,  show.getTitle());
 	    	this.preparedStatement.setString(2,  show.getComments());
 	    	this.preparedStatement.setString(3,  show.getType().toString().toLowerCase());
 	    	this.preparedStatement.setInt(4, show.getRating());
-	    	this.preparedStatement.setString(5,  DateTools.getFormattedDate());
-	    
+	    	// TODO fix the date varialbes
+	    	this.preparedStatement.setDate(5, (java.sql.Date) new Date());	    
 	    	this.preparedStatement.executeUpdate();
 	    	
     	} catch (SQLException e) {
@@ -108,8 +111,7 @@ public class DatabaseDriverA {
     		e.printStackTrace();
     		return false;
     	} finally {
-    		// close the sql connections
-    		close();
+    		close(); // always close the connection
     	}
     	
     	// prepared statement completed
@@ -150,6 +152,7 @@ public class DatabaseDriverA {
 			this.resultSet = this.preparedStatement.executeQuery(query);
 			
 			while (this.resultSet.next()) {
+				// while more data exists
 				String title = this.resultSet.getString("title");
 				String comment = this.resultSet.getString("comment");
 				ShowType type = ShowType.getShowType(this.resultSet.getString("type"));
@@ -160,12 +163,12 @@ public class DatabaseDriverA {
 				showsToRet.add(new Show(title, comment, type, rating, wDate));
 			}
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
+			return null;
 		} finally {
 			close();
 		}
-    	// return arraylist
+    	// return arraylists
     	return showsToRet;    	
     }
     
