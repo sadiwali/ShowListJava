@@ -2,6 +2,7 @@ package tools;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.Date;
 
 /**
@@ -17,7 +18,7 @@ public class DateTools {
 	 */
 	public static String getFormattedDate() {
 		DateFormat dateFormat = new SimpleDateFormat("mm/dd/yyyy");
-		Date today = new Date();
+		LocalDate today = LocalDate
 		return dateFormat.format(today);
 	}
 

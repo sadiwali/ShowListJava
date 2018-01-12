@@ -36,12 +36,14 @@ public class Prog {
 			
 		} else {
 			// run program normally
-			try {
-				Menu.mainMenu();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+//			try {
+//				Menu.mainMenu();
+//			} catch (IOException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//			
+			
 			
 			
 
